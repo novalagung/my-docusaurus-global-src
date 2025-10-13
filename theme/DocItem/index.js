@@ -1,7 +1,10 @@
-import React from 'react'
+import React from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { DiscussionEmbed } from 'disqus-react'
-import DocItem from '@theme-original/DocItem';
+import {DiscussionEmbed} from 'disqus-react'
+import {HtmlClassNameProvider} from '@docusaurus/theme-common';
+import {DocProvider} from '@docusaurus/plugin-content-docs/client';
+import DocItemMetadata from '@theme/DocItem/Metadata';
+import DocItemLayout from '@theme/DocItem/Layout';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const Ebook = () => {
@@ -13,6 +16,7 @@ const Ebook = () => {
     { id: 'dasarpemrogramangolang', name: 'Dasar Pemrograman Golang', src: '/img/cover ebook golang.png',  },
     { id: 'dasarpemrogramanpython', name: 'Dasar Pemrograman Python', src: '/img/cover ebook python.png' },
     { id: 'dasarpemrogramanrust', name: 'Dasar Pemrograman Rust', src: '/img/cover ebook rust.png' },
+    { id: 'dasarpemrogramantypescript', name: 'Dasar Pemrograman TypeScript', src: '/img/cover ebook typescript.png' },
   ].sort((a, b) => {
     const sortKey = (o) => String(o.id === siteConfig.projectName ? -1 : 1) + o.name
     const sortOrder = (sortKey(a)).localeCompare(sortKey(b))
@@ -35,7 +39,10 @@ const Ebook = () => {
   </>
 }
 
-export default function DocItemWrapper(props) {
+export default function DocItem(props) {
+  const docHtmlClassName = `docs-doc-id-${props.content.metadata.id}`;
+  const MDXComponent = props.content;
+
   const { siteConfig } = useDocusaurusContext();
   const { metadata } = props.content
   const { comments = true } = metadata.frontMatter
@@ -44,27 +51,32 @@ export default function DocItemWrapper(props) {
   const slug = `${siteConfig.url}${metadata.slug}`
 
   return (
-    <>
-      <DocItem {...props} />
-      <BrowserOnly>
-        {() => siteConfig.themeConfig.showContentFooterEbookWrapper ? <Ebook /> : <></>}
-      </BrowserOnly>
-      <BrowserOnly>
-        {() => comments && (
-          <>
-            <div className='disqus-wrapper'>
-              <DiscussionEmbed
-                shortname="dasarpemrogramangolang"
-                config={{
-                  url: slug,
-                  identifier: slug,
-                  title,
-                }}
-              />
-            </div>
-          </>
-        )}
-      </BrowserOnly>
-    </>
+    <DocProvider content={props.content}>
+      <HtmlClassNameProvider className={docHtmlClassName}>
+        <DocItemMetadata />
+        <DocItemLayout>
+          <MDXComponent />
+          <BrowserOnly>
+            {() => siteConfig.themeConfig.showContentFooterEbookWrapper ? <Ebook /> : <></>}
+          </BrowserOnly>
+          <BrowserOnly>
+            {() => comments && (
+              <>
+                <div className='disqus-wrapper'>
+                  <DiscussionEmbed
+                    shortname="dasarpemrogramangolang"
+                    config={{
+                      url: slug,
+                      identifier: slug,
+                      title,
+                    }}
+                  />
+                </div>
+              </>
+            )}
+          </BrowserOnly>
+        </DocItemLayout>
+      </HtmlClassNameProvider>
+    </DocProvider>
   );
 }

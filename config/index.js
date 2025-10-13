@@ -1,5 +1,5 @@
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const lightCodeTheme = require('prism-react-renderer').themes.github;
+const darkCodeTheme = require('prism-react-renderer').themes.dracula;
 
 //@ts-check
 const imageFetchPriorityRehypePlugin = require('../components/lcp-fetchpriority');
@@ -63,6 +63,7 @@ function buildConfig({
           },
           gtag: {
             trackingID: googleTrackingID,
+            anonymizeIP: true,
           },
           sitemap: {
             changefreq: 'weekly',
